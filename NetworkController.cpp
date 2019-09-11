@@ -5,13 +5,9 @@
 #include <LogHelper.h>
 
 #include "TaskIDs.h"
-
 #include "Debug.h"
 
 NetworkController* NetworkController::mInstance;
-//WebSocketsServer* NetworkController::wsServer;
-//EthernetClient NetworkController::activeClient;
-//uint64_t NetworkController::lastDBPing = 0;
 
 NetworkController::NetworkController() : AbstractTask() {
   mInstance = this;
@@ -26,11 +22,6 @@ void NetworkController::init() {
     0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
   };
   //IPAddress ip(192, 168, 0, 1);
-
-  CRGB tc = parseGET("GET /color/set?r=111&g=105&b=229&a=0 HTTP/1.1\r\nHost: 172.30.90.117:8080");
-  LOG_PRINTLN(tc);
-
-  return;
 
   LOG_PRINTLN(F("Ethernet start"));
   
@@ -51,9 +42,6 @@ void NetworkController::init() {
 }
 
 void NetworkController::update() {
-
-  return;
-  
   if (last_dhcp==0 || millis() - last_dhcp>DHCP_TIMEOUT_MS) {
     LOG_PRINTLN(F("DHCP maintain"));
     Ethernet.maintain();
@@ -62,15 +50,26 @@ void NetworkController::update() {
 
   EthernetClient client = ethernetServer->available();
   if (client) {
-    while (client.connected()) {
-      if (client.available()) {
-        String line = client.readStringUntil('\r');
-        if (line.startsWith("GET")) {
-          CRGB c = parseGET(line);
-          instance()->getTaskManager()->getTask<LedController*>(LED_CONTROLLER)->setColor(c);
-        }
+    if (client.connected() && client.available()) {
+      String line = client.readStringUntil('\r');
+      if (line.startsWith("GET")) {
+        CRGB c = parseGET(line);
+        instance()->getTaskManager()->getTask<LedController*>(LED_CONTROLLER)->setColor(c);
+
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-length: 0");
+        client.println("Connection: close");
+
+        delay(10);
+        
+        LOG_PRINTLN(F("Response sent"));
+      } else {
+        LOG_PRINT(F("Unsupported method: "));
+        LOG_PRINTLN(line);
       }
     }
+    
+    client.stop();
   }
 }
 
@@ -78,17 +77,24 @@ CRGB NetworkController::parseGET(String data) {
   CRGB returnC;
   
   String getReq = data.substring(4);
-  int r = getReq.indexOf("r=");
-  int rEnd = getReq.indexOf("&", r);
-  int g = getReq.indexOf("g=");
-  int gEnd = getReq.indexOf("&", g);
-  int b = getReq.indexOf("b=");
-  int bEnd = getReq.indexOf("&", b);
-  
-  if (r>=0 && g>=0 && b>=0) {
-    returnC.r = getReq.substring(r, rEnd).toInt();
-    returnC.g = getReq.substring(g, gEnd).toInt();
-    returnC.b = getReq.substring(b, bEnd).toInt();
+
+  if (getReq.startsWith("/color")) {
+    int r = getReq.indexOf("r=");
+    int rEnd = getReq.indexOf("&", r);
+    int g = getReq.indexOf("g=");
+    int gEnd = getReq.indexOf("&", g);
+    int b = getReq.indexOf("b=");
+    int bEnd = getReq.indexOf("&", b);
+    
+    if (r>=0 && g>=0 && b>=0) {
+      returnC.r = getReq.substring(r+2, rEnd).toInt();
+      returnC.g = getReq.substring(g+2, gEnd).toInt();
+      returnC.b = getReq.substring(b+2, bEnd).toInt();
+    } else {
+      LOG_PRINTLN(F("Invalid color"));
+    }
+  } else {
+    LOG_PRINTLN(F("Unknown path"));
   }
 
   return returnC;

@@ -16,7 +16,7 @@ FASTLED_USING_NAMESPACE
 #define LED_COLOR_ORDER GRB
 #define LED_NUM_LEDS    78
 
-#define LED_BRIGHTNESS         255
+#define LED_BRIGHTNESS         100
 
 
 class LedController : public AbstractIntervalTask {
@@ -33,6 +33,7 @@ public:
   void setBrightness(uint8_t value);
 
 private:
+  CRGB currentColor;
   CRGB leds[LED_NUM_LEDS];
   byte sinus = 0;
 
