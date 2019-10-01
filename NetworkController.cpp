@@ -21,17 +21,20 @@ void NetworkController::init() {
   byte mac[] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
   };
+  
   //IPAddress ip(192, 168, 0, 1);
 
   LOG_PRINTLN(F("Ethernet start"));
-  
+
   Ethernet.begin(mac/*, ip*/);
+  LOG_PRINTLN(F("Ethernet started"));
 
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    LOG_PRINTLN(F("Ethernet HW fail"));
+    LOG_PRINTLN(F("Ethernet HW missing"));
   }
 
   while (Ethernet.linkStatus() != LinkON) {
+    LOG_PRINT(Ethernet.linkStatus());
     LOG_PRINTLN(F("Ethernet cable is not connected."));
     delay(500);
   }

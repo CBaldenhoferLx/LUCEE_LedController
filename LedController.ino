@@ -13,7 +13,7 @@ void setup() {
   LOG_INIT();
 
   taskManager.registerTask(&ledController);  
-  //taskManager.registerTask(&networkController);  
+  taskManager.registerTask(&networkController);  
   
   taskManager.init();
 
