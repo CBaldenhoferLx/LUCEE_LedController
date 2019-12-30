@@ -14,10 +14,11 @@ FASTLED_USING_NAMESPACE
 
 #define LED_TYPE    WS2812B
 #define LED_COLOR_ORDER GRB
-#define LED_NUM_LEDS    78
+#define LED_NUM_LEDS    288  // 2x144
 
-#define LED_BRIGHTNESS         100
-
+#define LED_BASE_BRIGHTNESS         60
+#define LED_BRIGHTNESS_SPEED 1
+#define LED_BRIGHTNESS_SPAN 50
 
 class LedController : public AbstractIntervalTask {
 public:
@@ -27,15 +28,25 @@ public:
 
   void update();
 
+  bool useInitWDT() {
+    return false;
+  }
+
+
   //void setColor(uint8_t r, uint8_t g, uint8_t b);
   void setColor(CRGB c);
+
+  void setColorFromPalette(uint8_t index);
 
   void setBrightness(uint8_t value);
 
 private:
   CRGB currentColor;
   CRGB leds[LED_NUM_LEDS];
-  byte sinus = 0;
+
+  float currentBrightness = 0;
+  int baseBrightness = LED_BASE_BRIGHTNESS;
+  bool brightnessUp = true;  
 
 };
 

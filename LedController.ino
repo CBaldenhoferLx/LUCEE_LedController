@@ -2,18 +2,18 @@
 #include <TaskManager.h>
 
 #include "LEDController.h"
-#include "NetworkController.h"
+#include "CommController.h"
 
 TaskManager taskManager;
 
 LedController ledController;
-NetworkController networkController;
+CommController commController;
 
 void setup() {
   LOG_INIT();
 
   taskManager.registerTask(&ledController);  
-  taskManager.registerTask(&networkController);  
+  taskManager.registerTask(&commController);  
   
   taskManager.init();
 
