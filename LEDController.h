@@ -40,6 +40,8 @@ public:
 
   void setBrightness(uint8_t value);
 
+  void triggerAnimation();
+
 private:
   CRGB currentColor;
   CRGB leds[LED_NUM_LEDS];
@@ -47,6 +49,8 @@ private:
   float currentBrightness = 0;
   int baseBrightness = LED_BASE_BRIGHTNESS;
   bool brightnessUp = true;  
+
+  void playDefault();
 
 };
 

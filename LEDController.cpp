@@ -20,14 +20,10 @@ LedController::LedController() : AbstractIntervalTask(100) {
 void LedController::init() {
   delay( 3000 ); // power-up safety delay
   FastLED.addLeds<LED_TYPE, PIN_LED_DATA, LED_COLOR_ORDER>(leds, LED_NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.setBrightness(LED_BASE_BRIGHTNESS);
-
-  //setColor(CRGB(100, 100, 100));
-  //setColor(CRGB(250, 158, 84));   // orange
-  //setColor(CRGB(111, 105, 229));    // blue
-  setColor(CRGB::Amethyst);
 
   LOG_PRINTLN(F("Init LED"));
+
+  playDefault();
 }
 
 void LedController::update() {
@@ -53,6 +49,15 @@ void LedController::update() {
   FastLED.show();
 }
 
+void LedController::playDefault() {
+  FastLED.setBrightness(LED_BASE_BRIGHTNESS);
+
+  //setColor(CRGB(100, 100, 100));
+  //setColor(CRGB(250, 158, 84));   // orange
+  //setColor(CRGB(111, 105, 229));    // blue
+  setColor(CRGB::Amethyst);
+}
+
 void LedController::setColor(CRGB c) {
   currentColor = c;
   fill_solid(leds, LED_NUM_LEDS, c);
@@ -61,4 +66,22 @@ void LedController::setColor(CRGB c) {
 
 void LedController::setColorFromPalette(uint8_t index) {
   setColor(ColorFromPalette(myPal, index));
+}
+
+void LedController::triggerAnimation() {
+
+  for(int j = 0; j < 3; j++) {
+    setColor(CRGB::White);
+    delay(200);
+    setColor(CRGB::Red);
+    delay(200);
+    setColor(CRGB::Green);
+    delay(200);
+    setColor(CRGB::Blue);
+    delay(200);
+    setColor(CRGB::Black);
+    delay(200);
+  }
+
+  playDefault();
 }

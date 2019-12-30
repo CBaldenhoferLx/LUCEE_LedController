@@ -18,7 +18,7 @@ class CommController : public AbstractTask {
 public:
   CommController();
 
-  enum PAction { ACTION_NONE, ACTION_SET_COLOR };
+  enum PAction { ACTION_NONE, ACTION_SET_COLOR, ACTION_TRIGGER_ANIMATION };
 
   void init();
 

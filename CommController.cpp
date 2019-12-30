@@ -48,6 +48,9 @@ void CommController::handlePackage() {
       case ACTION_SET_COLOR:
         taskManager->getTask<LedController*>(LED_CONTROLLER)->setColorFromPalette(param);
         break;
+      case ACTION_TRIGGER_ANIMATION:
+        taskManager->getTask<LedController*>(LED_CONTROLLER)->triggerAnimation();
+        break;
     }
   } else {
     // invalid package
